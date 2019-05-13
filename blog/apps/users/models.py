@@ -15,7 +15,8 @@ class User(models.Model):
     gender = models.IntegerField(choices=GENDER)
     year_of_birth = models.DateTimeField(null=False, blank=False)
     GUID = models.UUIDField(default=uuid.uuid4, editable=False)
-    password = models.CharField(blank=False, null=False, max_length=100)
+    password = models.CharField(
+        blank=False, null=False, max_length=100)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(null=True, blank=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
