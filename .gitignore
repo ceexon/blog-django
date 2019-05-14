@@ -1,5 +1,5 @@
 .vscode/
 migrations/
-__pycache__/
+*pycache__/
 *.pyc
 
