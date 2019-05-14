@@ -21,7 +21,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('posts/', include('blog.apps.blogs.urls')),
     path('users/', include('blog.apps.users.urls')),
-    path('api-auth/', include('rest_framework.urls')),
-    path('api/token/', TokenObtainPairView.as_view()),
-    path('api/refresh', TokenRefreshView.as_view()),
 ]
