@@ -91,8 +91,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         date = datetime.now() + timedelta(hours=24)
 
         payload = {
-            'email': self.email,
-            'exp': int(date.strftime('%s')),
+            "user_id": self.id,
+            "username": self.email,
+            "exp": int(date.strftime('%s')),
+            "email": self.email
         }
         token = jwt.encode(
             payload,

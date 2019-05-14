@@ -9,7 +9,6 @@ from .models import User, Profile
 
 
 class CreateUser(generics.ListCreateAPIView):
-    permission_classes = (AllowAny,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -24,11 +23,20 @@ class LoginUser(APIView):
         print('\n\n\n', request.data)
         serializer.is_valid(raise_exception=True)
         print('\n\n\n', serializer.data, '\n\n\n')
+        user = User.objects.get(email=serializer.data['email'])
+        print('\n\n\n', user.id, '\n\n\n')
 
-        return response.Response(serializer.data)
+        response_data = {
+            'id': user.id,
+            'email': user.email,
+            'token': serializer.data['token']
+        }
+
+        return response.Response(response_data)
 
 
 class ListUser(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
