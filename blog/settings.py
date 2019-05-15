@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'blog.apps.blogs',
     'blog.apps.users',
+    'coverage',
 ]
 
 AUTH_USER_MODEL = 'users.User'
