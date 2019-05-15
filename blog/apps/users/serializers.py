@@ -16,12 +16,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'profile')
+        fields = ('id', 'email', 'profile', 'password')
 
     def create(self, validated_data):
         user = User.objects.create(
             email=validated_data['email'],
         )
+
+        user.set_password(validated_data['password'])
+        user.save()
 
         profile_data = validated_data.pop('profile')
         profile = Profile.objects.create(
@@ -40,6 +43,7 @@ class UserSerializer(serializers.ModelSerializer):
         profile = instance.profile
 
         instance.email = validated_data.get('email', instance.email)
+        instance.set_password(validated_data['password'])
         instance.save()
 
         profile.first_name = profile_data.get('first_name', profile.first_name)

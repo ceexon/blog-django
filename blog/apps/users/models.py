@@ -3,6 +3,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 import uuid
 import jwt
+from rest_framework_jwt.settings import api_settings
 from ... import settings
 from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin
@@ -55,6 +56,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=200, unique=True)
+    password = models.CharField(max_length=800, null=False, blank=False)
     active = models.BooleanField(default=True)  # can login
     is_superuser = models.BooleanField(default=False)  # superuser
     staff = models.BooleanField(default=True)
@@ -88,17 +90,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def gen_token(self):
-        date = datetime.now() + timedelta(hours=24)
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
-        payload = {
-            "user_id": self.id,
-            "username": self.email,
-            "exp": int(date.strftime('%s')),
-            "email": self.email
-        }
-        token = jwt.encode(
-            payload,
-            settings.SECRET_KEY, algorithm='HS256').decode('utf-8')
+        payload = jwt_payload_handler(self)
+        token = jwt_encode_handler(payload)
+
         return token
 
 
