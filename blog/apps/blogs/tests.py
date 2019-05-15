@@ -1,3 +1,6 @@
-from django.test import TestCase
+from ..users.tests import BaseTest
 
-# Create your tests here.
+
+# class BlogPostTest(BaseTest):
+#     def login(self):
+#         pass
