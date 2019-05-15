@@ -20,7 +20,7 @@ before_script:
   - python manage.py migrate
 
 script:
-  - coverage report -m
+  - coverage run --source=. manage.py && coverage report -m
   - coveralls
 
 after_success:
