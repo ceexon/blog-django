@@ -13,6 +13,9 @@ services:
 addons:
   postgresql: "9.4"
 
+env:
+  - DJANGO=2.2.1
+
 before_script:
   - psql -c 'create database blog_db;' -U postgres
   - psql -c "CREATE USER zonecc WITH PASSWORD 'zonecc';" -U postgres
@@ -20,8 +23,8 @@ before_script:
   - python manage.py migrate
 
 script:
-  - coverage run --source=. manage.py && coverage report -m
-  - coveralls
+  - coverage run --source=. manage.py test
+  - python -m coverage report -m
 
 after_success:
   - coveralls
