@@ -14,7 +14,7 @@ addons:
   postgresql: "9.4"
 
 before_script:
-  - psql -c 'create database blogdb;' -U postgres
+  - psql -c 'create database blogdb;' -U zonecc
   - python manage.py makemigrations
   - python manage.py migrate
 
