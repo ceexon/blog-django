@@ -20,8 +20,11 @@ before_script:
   - python manage.py migrate
 
 script:
-  - coverage run --source=blog manage.py test && coverage report -m
+  - coverage report -m
   - coveralls
 
 after_success:
   - coveralls
+
+notifications:
+  email: false
