@@ -1,0 +1,19 @@
+language: python
+
+# python versions
+python:
+  - "3.7"
+  - "2.7.4"
+
+env: -DJANGO=1.8 DB=postgresql
+
+# install requirements
+install:
+  - pipenv install
+
+# To run tests
+script:
+  - coverage run --source=blog  manage.py test --force-color
+
+# send coverage report to coveralls
+after_success: coveralls
