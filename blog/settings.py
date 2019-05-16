@@ -162,6 +162,13 @@ JWT_AUTH = {
     'JWT_AUTH_COOKIE': None,
 }
 
+# Cloudinary settings for Django
+CLOUDINARY = {
+    'cloud_name': 'zonecc',
+    'api_key': '196414776856223',
+    'api_secret': '17Ee8GSFLaOyKk0Z6BECwikHWcs',
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
