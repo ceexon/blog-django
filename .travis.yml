@@ -24,7 +24,7 @@ before_script:
   - python manage.py migrate
 
 script:
-  - coverage run manage.py test
+  - coverage run --source=blog manage.py test -v 3
   - coverage report
   - coveralls
 
