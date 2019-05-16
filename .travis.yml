@@ -25,6 +25,8 @@ before_script:
 
 script:
   - coverage run --parallel-mode manage.py test
+  - coverage report
+  - coveralls
 
 after_success:
   - coveralls
