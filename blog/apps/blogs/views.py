@@ -125,7 +125,7 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
 
         if owner:
             post = BlogPost.objects.get(id=id)
-            post.destroy()
+            post.delete()
 
             return Response({
                 'Message': "Blog Post was succesfully deleted"
