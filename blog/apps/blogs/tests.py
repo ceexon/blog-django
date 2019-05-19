@@ -89,8 +89,19 @@ class BlogPostTests(BaseTest):
             format='json'
         )
 
+        response2 = self.client.put(
+            '/posts/3/',
+            {
+                'title': "New blog title",
+                "content": "changing the blog content",
+                "caption": "new or old caption",
+            },
+            format='json'
+        )
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response1.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response2.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_single_3_delete_blog(self):
         token = self.login()
@@ -110,6 +121,12 @@ class BlogPostTests(BaseTest):
             format='json'
         )
 
+        response0 = self.client.delete(
+            '/posts/4/',
+            HTTP_AUTHORIZATION='Bearer '+token_1,
+            format='json'
+        )
+
         response1 = self.client.delete(
             '/posts/4/',
             HTTP_AUTHORIZATION='Bearer '+token,
@@ -123,5 +140,6 @@ class BlogPostTests(BaseTest):
         )
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response0.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response1.status_code, status.HTTP_200_OK)
         self.assertEqual(response2.status_code, status.HTTP_404_NOT_FOUND)

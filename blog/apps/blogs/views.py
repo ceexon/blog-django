@@ -88,7 +88,11 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        token = request.auth.decode()
+        try:
+            token = request.auth.decode()
+        except Exception:
+            return Response("Please Log in to be able to edit this post",
+                            status=401)
         user_id = decode_token(token)
         owner = is_owner(token, int(id))
 
@@ -135,7 +139,11 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
                 status=403)
 
     def destroy(self, request, id):
-        token = request.auth.decode()
+        try:
+            token = request.auth.decode()
+        except Exception:
+            return Response("Please Log in to be able to edit this post",
+                            status=401)
         user_id = decode_token(token)
         owner = is_owner(token, int(id))
 
