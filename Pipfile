@@ -20,6 +20,7 @@ coveralls = "*"
 psycopg2 = "*"
 gunicorn = "*"
 django-heroku = "*"
+django-cors-headers = "*"
 
 [requires]
 python_version = "3.7"
