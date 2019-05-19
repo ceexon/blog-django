@@ -16,6 +16,7 @@ djangorestframework-simplejwt = "*"
 djangorestframework-jwt = "*"
 coverage = "*"
 cloudinary = "*"
+coveralls = "*"
 
 [requires]
 python_version = "3.7"

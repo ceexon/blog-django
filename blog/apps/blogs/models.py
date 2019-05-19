@@ -8,6 +8,7 @@ User = settings.AUTH_USER_MODEL
 class BlogPost(models.Model):
     title = models.CharField(max_length=150)
     content = models.TextField()
+    slug = models.SlugField(unique=True, max_length=200, blank=True, null=True)
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, blank=True, null=True)
     image = models.TextField(max_length=1000, validators=[

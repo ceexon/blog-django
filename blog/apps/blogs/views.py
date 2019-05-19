@@ -8,6 +8,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from blog.backends import decode_token, is_owner
 from cloudinary import uploader
 from datetime import datetime
+from django.utils.text import slugify
+from django.shortcuts import get_object_or_404
+import itertools
 
 
 class CreateBlogPost(generics.ListCreateAPIView):
@@ -25,7 +28,6 @@ class CreateBlogPost(generics.ListCreateAPIView):
         profile = Profile.objects.get(user_id=user_id)
         user_name = profile.first_name+'_' + \
             '_'.join(profile.other_names.split())
-
         now = datetime.now().strftime("%Y%m%d_%H%M%S")
         image_url = ''
 
@@ -45,9 +47,18 @@ class CreateBlogPost(generics.ListCreateAPIView):
         new_post.content = serializer.data['content']
         new_post.image = image_url
         new_post.caption = serializer.data['caption']
+        new_post.slug = orig = slugify(new_post.title)
+
+        for x in itertools.count(1):
+            if not BlogPost.objects.filter(slug=new_post.slug).exists():
+                break
+            new_post.slug = '%s-%d' % (orig, x)
+
         new_post.save()
 
         response_data = {
+            'id': new_post.id,
+            'slug': new_post.slug,
             'title': serializer.data['title'],
             'content': serializer.data['content'],
             'image': image_url,
@@ -63,7 +74,12 @@ class ListBlogPosts(generics.ListAPIView):
 
 
 class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes_by_action = {
+        'retrieve': [AllowAny],
+        'update': [IsAuthenticated],
+        'destroy': [IsAuthenticated],
+    }
+
     lookup_field = 'id'
     serializer_class = BlogPostSerializer
     queryset = BlogPost.objects.all()
@@ -77,15 +93,14 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
         owner = is_owner(token, int(id))
 
         if owner:
-            user = User.objects.get(id=user_id)
+            user = get_object_or_404(User, id=user_id)
             profile = Profile.objects.get(user_id=user_id)
             user_name = profile.first_name+'_' + \
                 '_'.join(profile.other_names.split())
 
             now = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-            post = BlogPost.objects.get(id=id)
-            image_url = post.image
+            post = get_object_or_404(BlogPost, id=id)
 
             try:
                 image = request.FILES['image']
@@ -93,25 +108,26 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
                 picture_name = user_name+'_'+now+'.'+image_ext
                 image.name = picture_name
                 cloudinary_response = uploader.upload(image)
-                image_url = cloudinary_response['secure_url']
+                post.image = cloudinary_response['secure_url']
             except Exception:
                 pass
 
+            if(serializer.data['caption'] is not None):
+                post.caption = serializer.data['caption']
+
             post.title = serializer.data['title']
             post.content = serializer.data['content']
-            post.image = image_url
-            post.caption = serializer.data['caption']
             post.save()
 
             response_data = {
-                'title': serializer.data['title'],
-                'content': serializer.data['content'],
-                'image': image_url,
-                'caption': serializer.data['caption'],
+                'title': post.title,
+                'content': post.content,
+                'image': post.image,
+                'caption': post.caption,
                 'author': user_id,
             }
 
-            return Response(response_data, status=201)
+            return Response(response_data, status=200)
 
         else:
             return Response({
