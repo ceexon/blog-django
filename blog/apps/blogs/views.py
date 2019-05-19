@@ -11,6 +11,7 @@ from datetime import datetime
 from django.utils.text import slugify
 from django.shortcuts import get_object_or_404
 import itertools
+from psycopg2.extras import Json
 
 
 class CreateBlogPost(generics.ListCreateAPIView):
@@ -40,6 +41,8 @@ class CreateBlogPost(generics.ListCreateAPIView):
             image_url = cloudinary_response['secure_url']
         except Exception:
             pass
+
+        print(image_url)
 
         new_post = BlogPost()
         new_post.author = user
@@ -111,6 +114,7 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
                 image_ext = image.name.split('.')[-1]
                 picture_name = user_name+'_'+now+'.'+image_ext
                 image.name = picture_name
+                print('here')
                 cloudinary_response = uploader.upload(image)
                 post.image = cloudinary_response['secure_url']
             except Exception:
@@ -149,6 +153,7 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
 
         if owner:
             post = BlogPost.objects.get(id=id)
+            uploader.destroy(post.image.public_id)
             post.delete()
 
             return Response({
