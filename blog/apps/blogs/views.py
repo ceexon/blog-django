@@ -148,7 +148,6 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
 
         if owner:
             post = BlogPost.objects.get(id=id)
-            uploader.destroy(post.image.public_id)
             post.delete()
 
             return Response({
