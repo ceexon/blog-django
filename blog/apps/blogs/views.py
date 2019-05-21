@@ -89,8 +89,9 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
         try:
             token = request.auth.decode()
         except Exception:
-            return Response("Please Log in to be able to edit this post",
-                            status=401)
+            return Response({
+                "Error": "Login is required to edit this post"},
+                status=401)
         user_id = decode_token(token)
         owner = is_owner(token, int(id))
 
@@ -138,8 +139,10 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
         try:
             token = request.auth.decode()
         except Exception:
-            return Response("Please Log in to be able to edit this post",
-                            status=401)
+            return Response(
+                {
+                    "Message": "Login is required to delete this post"
+                }, status=401)
         user_id = decode_token(token)
         owner = is_owner(token, int(id))
 
