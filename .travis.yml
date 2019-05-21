@@ -21,6 +21,7 @@ before_script:
   - psql -c "CREATE USER zonecc WITH PASSWORD 'zonecc';" -U postgres
   - psql -c "ALTER ROLE zonecc CREATEDB;"
   - psql -c "ALTER DATABASE blog_db OWNER TO zonecc"
+  - psql -c "ALTER ROLE zonecc superuser;"
   - python manage.py makemigrations
   - python manage.py migrate
 
