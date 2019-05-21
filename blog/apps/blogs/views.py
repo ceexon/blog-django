@@ -12,6 +12,7 @@ from django.utils.text import slugify
 from django.shortcuts import get_object_or_404
 import itertools
 from psycopg2.extras import Json
+from .utils import upload_image
 
 
 class CreateBlogPost(generics.ListCreateAPIView):
@@ -30,25 +31,19 @@ class CreateBlogPost(generics.ListCreateAPIView):
         user_name = profile.first_name+'_' + \
             '_'.join(profile.other_names.split())
         now = datetime.now().strftime("%Y%m%d_%H%M%S")
-        image_url = ''
+        image_url = None
 
-        try:
-            image = request.FILES['image']
-            image_ext = image.name.split('.')[-1]
-            picture_name = user_name+'_'+now+'.'+image_ext
-            image.name = picture_name
-            cloudinary_response = uploader.upload(image)
-            image_url = cloudinary_response['secure_url']
-        except Exception:
-            pass
+        file_exists = request.FILES.get('image', False)
 
-        print(image_url)
+        if(file_exists):
+            image_url = str(upload_image(file_exists)["image"])
 
         new_post = BlogPost()
         new_post.author = user
         new_post.title = serializer.data['title']
         new_post.content = serializer.data['content']
         new_post.image = image_url
+        new_post.image_url = image_url
         new_post.caption = serializer.data['caption']
         new_post.slug = orig = slugify(new_post.title)
 
@@ -62,10 +57,10 @@ class CreateBlogPost(generics.ListCreateAPIView):
         response_data = {
             'id': new_post.id,
             'slug': new_post.slug,
-            'title': serializer.data['title'],
-            'content': serializer.data['content'],
-            'image': image_url,
-            'caption': serializer.data['caption'],
+            'title': new_post.title,
+            'content': new_post.content,
+            'image': new_post.image,
+            'caption': new_post.caption,
             'author': user_id,
         }
         return Response(response_data, status=201)
@@ -78,9 +73,9 @@ class ListBlogPosts(generics.ListAPIView):
 
 class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
     permission_classes_by_action = {
-        'retrieve': [AllowAny],
-        'update': [IsAuthenticated],
-        'destroy': [IsAuthenticated],
+        'retrieve': (AllowAny,),
+        'update': (IsAuthenticated,),
+        'destroy': (IsAuthenticated,),
     }
 
     lookup_field = 'id'
@@ -109,20 +104,17 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
 
             post = get_object_or_404(BlogPost, id=id)
 
-            try:
-                image = request.FILES['image']
-                image_ext = image.name.split('.')[-1]
-                picture_name = user_name+'_'+now+'.'+image_ext
-                image.name = picture_name
-                print('here')
-                cloudinary_response = uploader.upload(image)
-                post.image = cloudinary_response['secure_url']
-            except Exception:
-                pass
+            image_url = post.image
+            file_exists = request.FILES.get('image', False)
+
+            if(file_exists):
+                image_url = upload_image(file_exists)["image"]
 
             if(serializer.data['caption'] is not None):
                 post.caption = serializer.data['caption']
 
+            post.image_url = image_url
+            post.image = image_url
             post.title = serializer.data['title']
             post.content = serializer.data['content']
             post.save()
@@ -130,7 +122,7 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
             response_data = {
                 'title': post.title,
                 'content': post.content,
-                'image': post.image,
+                'image': post.image_url,
                 'caption': post.caption,
                 'author': user_id,
             }

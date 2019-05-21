@@ -3,7 +3,8 @@ from .models import BlogPost
 
 
 class BlogPostSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = BlogPost
         fields = ['id', 'slug', 'title', 'content',
-                  'date', 'caption', 'author', "image_url", "image"]
+                  'date', 'caption', 'author', "image_url"]
