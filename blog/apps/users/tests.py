@@ -158,22 +158,6 @@ class UserTests(BaseTest):
         self.assertEqual(response_1.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_2.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_view_all_users_not_authenticated(self):
-        login = self.client.post(
-            '/users/login/',
-            {
-                "email": "trevor@zone.code",
-                "password": "zonecode123",
-            },
-            format='json'
-        )
-
-        token = login.data['token']
-
-        response = self.client.get('/users/')
-
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
     def test_view_all_users(self):
         login = self.client.post(
             '/users/login/',
