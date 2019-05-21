@@ -7,18 +7,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('blogs', '0007_auto_20190516_0652'),
+        ('blogs', '0006_auto_20190516_0557'),
     ]
 
     operations = [
         migrations.AddField(
             model_name='blogpost',
             name='slug',
-            field=models.SlugField(blank=True, max_length=200, null=True, unique=True),
+            field=models.SlugField(
+                blank=True, max_length=200, null=True, unique=True),
         ),
         migrations.AlterField(
             model_name='blogpost',
             name='image',
-            field=models.TextField(blank=True, max_length=1000, null=True, validators=[django.core.validators.URLValidator]),
+            field=models.TextField(blank=True, max_length=1000, null=True,
+                                   validators=[
+                                       django.core.validators.URLValidator]),
         ),
     ]

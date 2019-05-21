@@ -33,7 +33,7 @@ class LoginUser(APIView):
 
 
 class ListUser(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 

@@ -21,12 +21,15 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='blogpost',
             name='image',
-            field=cloudinary.models.CloudinaryField(blank=True, max_length=255, null=True, verbose_name='image'),
+            field=cloudinary.models.CloudinaryField(
+                blank=True, max_length=255, null=True, verbose_name='image'),
         ),
         migrations.AlterField(
             model_name='blogpost',
             name='author',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(blank=True, null=True,
+                                    on_delete=django.db.models.deletion.
+                                    CASCADE, to=settings.AUTH_USER_MODEL),
         ),
         migrations.AlterField(
             model_name='blogpost',
