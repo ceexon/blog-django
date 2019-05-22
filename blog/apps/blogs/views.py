@@ -86,7 +86,11 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
         serializer.is_valid(raise_exception=True)
 
         user_id = decode_token(request)
-        owner = is_owner(token, int(id))
+        if user_id['status'] == 401:
+            return Response(user_id, status=user_id['status'])
+
+        user_id = user_id['user']
+        owner = is_owner(request, int(id))
 
         if owner:
             user = get_object_or_404(User, id=user_id)
@@ -131,6 +135,10 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
 
     def destroy(self, request, id):
         user_id = decode_token(request)
+        if user_id['status'] == 401:
+            return Response(user_id, status=user_id['status'])
+
+        user_id = user_id['user']
         owner = is_owner(token, int(id))
 
         if owner:
