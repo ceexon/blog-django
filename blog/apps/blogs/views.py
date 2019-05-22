@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.response import Response
-from .models import BlogPost
+from .models import BlogPost, Like
 from ..users.models import User, Profile
 from .serializers import BlogPostSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,7 +12,7 @@ from django.utils.text import slugify
 from django.shortcuts import get_object_or_404
 import itertools
 from psycopg2.extras import Json
-from .utils import upload_image
+from .utils import upload_image, like_or_deslike
 
 
 class CreateBlogPost(generics.ListCreateAPIView):
@@ -24,8 +24,7 @@ class CreateBlogPost(generics.ListCreateAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        token = request.auth.decode()
-        user_id = decode_token(token)
+        user_id = decode_token(request)
         user = User.objects.get(id=user_id)
         profile = Profile.objects.get(user_id=user_id)
         user_name = profile.first_name+'_' + \
@@ -86,13 +85,7 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        try:
-            token = request.auth.decode()
-        except Exception:
-            return Response({
-                "Error": "Login is required to edit this post"},
-                status=401)
-        user_id = decode_token(token)
+        user_id = decode_token(request)
         owner = is_owner(token, int(id))
 
         if owner:
@@ -122,6 +115,7 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
 
             response_data = {
                 'title': post.title,
+                'slug': post.slug,
                 'content': post.content,
                 'image': post.image_url,
                 'caption': post.caption,
@@ -136,14 +130,7 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
                 status=403)
 
     def destroy(self, request, id):
-        try:
-            token = request.auth.decode()
-        except Exception:
-            return Response(
-                {
-                    "Message": "Login is required to delete this post"
-                }, status=401)
-        user_id = decode_token(token)
+        user_id = decode_token(request)
         owner = is_owner(token, int(id))
 
         if owner:
@@ -158,3 +145,62 @@ class RUDBlogPost(generics.RetrieveUpdateDestroyAPIView):
             return Response({
                 'message': "You cannot delete a post that is not yours"},
                 status=403)
+
+
+class LikeBlogPost(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    lookup_field = 'post_id'
+
+    def post(self, request, post_id):
+        user_id = decode_token(request)
+
+        user = get_object_or_404(User, id=user_id)
+        post = get_object_or_404(BlogPost, id=post_id)
+
+        res_data = like_or_deslike(user, post, True)
+
+        return Response(res_data, status=res_data['status'])
+
+
+class DislikeBlogPost(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    lookup_field = 'post_id'
+
+    def post(self, request, post_id):
+        user_id = decode_token(request)
+
+        user = get_object_or_404(User, id=user_id)
+        post = get_object_or_404(BlogPost, id=post_id)
+
+        res_data = like_or_deslike(user, post, False)
+
+        return Response(res_data, status=res_data['status'])
+
+
+class CountBLogLikes(generics.ListAPIView):
+    permission_classes = (AllowAny,)
+    lookup_field = 'post_id'
+
+    def get(self, request, post_id):
+        likes = Like.objects.filter(post=post_id)
+        post = get_object_or_404(BlogPost, id=post_id)
+        count_likes = []
+        count_dislikes = []
+
+        for like in likes:
+            if like.like:
+                count_likes.append(like)
+            else:
+                count_dislikes.append(like)
+
+        return Response(
+            {
+                'Title': post.title,
+                'slug': post.slug,
+                'Date': post.date,
+                'Auther': post.author_id,
+                'Likes': len(count_likes),
+                'Dislikes': len(count_dislikes)
+            },
+            status=200
+        )

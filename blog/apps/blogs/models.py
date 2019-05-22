@@ -21,3 +21,11 @@ class BlogPost(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Like(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, blank=True, null=True)
+    post = models.ForeignKey(
+        BlogPost, on_delete=models.CASCADE, blank=True, null=True)
+    like = models.BooleanField(blank=True, null=True, default=True)
