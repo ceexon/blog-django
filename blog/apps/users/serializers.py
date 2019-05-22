@@ -8,7 +8,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ('id', 'first_name', 'other_names',
-                  'bio', 'gender', 'year_of_birth', 'user')
+                  'bio', 'gender', 'date_of_birth', 'user')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -33,7 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
             other_names=profile_data['other_names'],
             gender=profile_data['gender'],
             bio=profile_data['bio'],
-            year_of_birth=profile_data['year_of_birth'],
+            date_of_birth=profile_data['date_of_birth'],
         )
 
         return user
@@ -51,8 +51,8 @@ class UserSerializer(serializers.ModelSerializer):
             'other_names', profile.other_names)
         profile.gender = profile_data.get('gender', profile.gender)
         profile.bio = profile_data.get('bio', profile.bio)
-        profile.year_of_birth = profile_data.get(
-            'year_of_birth', profile.year_of_birth)
+        profile.date_of_birth = profile_data.get(
+            'date_of_birth', profile.date_of_birth)
         profile.save()
 
         return instance

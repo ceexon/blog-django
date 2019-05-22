@@ -106,7 +106,7 @@ class Profile(models.Model):
     other_names = models.CharField(max_length=70, blank=False, null=False)
     gender = models.IntegerField(choices=GENDER)
     bio = models.TextField(max_length=500, blank=True)
-    year_of_birth = models.DateTimeField(null=False, blank=False)
+    date_of_birth = models.DateTimeField(null=False, blank=False)
     GUID = models.UUIDField(default=uuid.uuid4, editable=False)
     timestamp = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(null=True, blank=True)

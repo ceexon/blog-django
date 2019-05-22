@@ -13,7 +13,7 @@ class BaseTest(TransactionTestCase):
             "profile": {
                 "first_name": "Zee",
                 "other_names": "Zonecc",
-                "year_of_birth": "1998-07-03 08:00",
+                "date_of_birth": "1998-07-03 08:00",
                 "bio": "Django Training developer upcoming",
                 "gender": 1
             }
@@ -25,7 +25,7 @@ class BaseTest(TransactionTestCase):
             "profile": {
                 "first_name": "Zee",
                 "other_names": "Zonecc",
-                "year_of_birth": "1998-07-03 08:00",
+                "date_of_birth": "1998-07-03 08:00",
                 "bio": "Django Training developer upcoming",
                 "gender": 1
             }
@@ -58,7 +58,7 @@ class UserTests(BaseTest):
                 "profile": {
                     "first_name": "Zee",
                     "other_names": "Zonecc",
-                    "year_of_birth": "1998-07-03 08:00",
+                    "date_of_birth": "1998-07-03 08:00",
                     "bio": "Django Training developer upcoming",
                     "gender": 1
                 }
@@ -74,7 +74,7 @@ class UserTests(BaseTest):
                 "profile": {
                     "first_name": "Zee",
                     "other_names": "Zonecc",
-                    "year_of_birth": "1998-07-03 08:00",
+                    "date_of_birth": "1998-07-03 08:00",
                     "bio": "Django Training developer upcoming",
                     "gender": 1
                 }
